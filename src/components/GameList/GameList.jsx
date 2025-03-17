@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyledGameList } from './GameList.styled';
 import { GameCard } from '../GameCard/GameCard';
-// import { GameCard } from '../GameCard/GameCard';
 
 export const GameList = ({ items }) => {
-  console.log(items);
+  if (!Array.isArray(items)) {
+    console.error('GameList: items не массив!', items);
+    return null;
+  }
+
   return (
     <StyledGameList>
       {items.map((item) => (

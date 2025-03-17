@@ -25,8 +25,8 @@ export const MainContentWrapper = () => {
         setLoading(true);
         setError(false);
         const games = await fetchGames();
+        console.log('Данные из API:', games);
         setGameItems(games);
-        console.log(games);
       } catch (error) {
         setError(true);
         console.log(error);
