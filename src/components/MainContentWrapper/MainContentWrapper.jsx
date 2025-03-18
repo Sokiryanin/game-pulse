@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AsideContainer,
   ContentWrapper,
@@ -7,26 +7,31 @@ import {
 } from './MainContentWrapper.styled';
 
 import { fetchGames } from '../../api.js';
-
 import { GameList } from '../GameList/GameList.jsx';
 
 export const MainContentWrapper = () => {
   const [gameItems, setGameItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  //   const [orderFilter, setOrderFilter] = useState({
-  //     orderBy: 'Relevance',
-  //     SiPlatform: 'PC'
-  //   });
+
+  const [nextPage, setNextPage] = useState(null);
+  const observer = useRef();
+
+  const styles = {
+    container: {
+      marginBottom: '14px',
+      fontSize: '24px'
+    }
+  };
 
   useEffect(() => {
     async function getGames() {
       try {
         setLoading(true);
         setError(false);
-        const games = await fetchGames();
-        console.log('Данные из API:', games);
-        setGameItems(games);
+        const { results, next } = await fetchGames();
+        setGameItems(results);
+        setNextPage(next); // Сохраняем ссылку на следующую страницу
       } catch (error) {
         setError(true);
         console.log(error);
@@ -37,12 +42,46 @@ export const MainContentWrapper = () => {
     getGames();
   }, []);
 
-  const styles = {
-    container: {
-      marginBottom: '14px',
-      fontSize: '24px'
+  // Функция для загрузки следующей страницы
+  const loadMoreGames = useCallback(async () => {
+    if (!nextPage || loading) return;
+
+    try {
+      setLoading(true);
+      const { results, next } = await fetchGames(nextPage);
+
+      setGameItems((prev) => [
+        ...prev,
+        ...results.filter(
+          (game) => !prev.some((prevGame) => prevGame.id === game.id)
+        )
+      ]); // Убираем дубликаты
+
+      setNextPage(next); // Обновляем ссылку на след. страницу
+    } catch (error) {
+      setError(true);
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [nextPage, loading]);
+
+  // Отслеживаем последний элемент списка (для подгрузки)
+  const lastElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && nextPage) {
+          loadMoreGames();
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, nextPage, loadMoreGames]
+  );
 
   return (
     <MainContainer>
@@ -112,9 +151,10 @@ export const MainContentWrapper = () => {
         </div>
 
         <div>
+          <GameList items={gameItems} lastElementRef={lastElementRef} />
+
           {loading && <div>LOADING...</div>}
           {error && !loading && <div>OOPS! THERE WAS AN ERROR!</div>}
-          <GameList items={gameItems} />
         </div>
       </ContentWrapper>
     </MainContainer>
