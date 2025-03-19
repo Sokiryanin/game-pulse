@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AllGamePage } from '../../pages/AllGamesPage/AllGamePage';
 import {
   AsideContainer,
   ContentWrapper,
@@ -6,82 +6,13 @@ import {
   StyledAside
 } from './MainContentWrapper.styled';
 
-import { fetchGames } from '../../api.js';
-import { GameList } from '../GameList/GameList.jsx';
-
 export const MainContentWrapper = () => {
-  const [gameItems, setGameItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const [nextPage, setNextPage] = useState(null);
-  const observer = useRef();
-
   const styles = {
     container: {
       marginBottom: '14px',
       fontSize: '24px'
     }
   };
-
-  useEffect(() => {
-    async function getGames() {
-      try {
-        setLoading(true);
-        setError(false);
-        const { results, next } = await fetchGames();
-        setGameItems(results);
-        setNextPage(next); // Сохраняем ссылку на следующую страницу
-      } catch (error) {
-        setError(true);
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getGames();
-  }, []);
-
-  // Функция для загрузки следующей страницы
-  const loadMoreGames = useCallback(async () => {
-    if (!nextPage || loading) return;
-
-    try {
-      setLoading(true);
-      const { results, next } = await fetchGames(nextPage);
-
-      setGameItems((prev) => [
-        ...prev,
-        ...results.filter(
-          (game) => !prev.some((prevGame) => prevGame.id === game.id)
-        )
-      ]); // Убираем дубликаты
-
-      setNextPage(next); // Обновляем ссылку на след. страницу
-    } catch (error) {
-      setError(true);
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [nextPage, loading]);
-
-  // Отслеживаем последний элемент списка (для подгрузки)
-  const lastElementRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && nextPage) {
-          loadMoreGames();
-        }
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [loading, nextPage, loadMoreGames]
-  );
 
   return (
     <MainContainer>
@@ -132,30 +63,9 @@ export const MainContentWrapper = () => {
           </nav>
         </StyledAside>
       </AsideContainer>
-      {/* Page Home */}
+
       <ContentWrapper>
-        <div style={styles.container}>
-          <h3>New and trending</h3>
-          <p>Based on player counts and release date</p>
-        </div>
-
-        <div>
-          <select name="" id="">
-            <option value="">Relevance</option>
-            <option value="">Date added</option>
-            <option value="">Name</option>
-            <option value="">Release date</option>
-            <option value="">Popularity</option>
-            <option value="">Average rating</option>
-          </select>
-        </div>
-
-        <div>
-          <GameList items={gameItems} lastElementRef={lastElementRef} />
-
-          {loading && <div>LOADING...</div>}
-          {error && !loading && <div>OOPS! THERE WAS AN ERROR!</div>}
-        </div>
+        <AllGamePage />
       </ContentWrapper>
     </MainContainer>
   );
