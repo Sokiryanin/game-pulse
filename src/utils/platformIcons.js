@@ -1,5 +1,5 @@
 import { FaWindows } from 'react-icons/fa6';
-import { SiPlaystation, SiNintendo } from 'react-icons/si';
+import { SiPlaystation, SiNintendo, SiSega } from 'react-icons/si';
 import {
   FaXbox,
   FaAppStoreIos,
@@ -16,5 +16,6 @@ export const platformIcons = [
   { keyword: 'android', icon: FaAndroid },
   { keyword: 'nintendo', icon: SiNintendo },
   { keyword: 'macos', icon: FaApple },
-  { keyword: 'linux', icon: FaLinux }
+  { keyword: 'linux', icon: FaLinux },
+  { keyword: 'sega', icon: SiSega }
 ];
