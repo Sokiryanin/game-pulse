@@ -6,17 +6,18 @@ import { PlatformFilter } from '../../components/PlatformFilter/PlatformFilter';
 
 const getInitialFilters = () => {
   const saved = localStorage.getItem('game-filters');
-  return saved ? JSON.parse(saved) : { platformId: '' };
+  return saved
+    ? JSON.parse(saved)
+    : { platformId: '', platformName: 'All Platforms' };
 };
 
-export const AllGamePage = () => {
+const AllGamePage = () => {
   const [gameItems, setGameItems] = useState([]);
   const [filters, setFilters] = useState(getInitialFilters);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [nextPage, setNextPage] = useState(null);
   const [platforms, setPlatforms] = useState([]);
-
   const observer = useRef();
 
   const styles = {
@@ -26,7 +27,6 @@ export const AllGamePage = () => {
     }
   };
 
-  // получаем платфомры для фильтрации
   useEffect(() => {
     async function loadPlatforms() {
       const data = await fetchPlatforms();
@@ -35,7 +35,6 @@ export const AllGamePage = () => {
     loadPlatforms();
   }, []);
 
-  // 🔁 Получаем список игр при первом рендере или смене фильтра
   useEffect(() => {
     async function getGames() {
       try {
@@ -60,22 +59,26 @@ export const AllGamePage = () => {
     getGames();
   }, [filters]);
 
-  // 💾 Сохраняем фильтр
   useEffect(() => {
     localStorage.setItem('game-filters', JSON.stringify(filters));
   }, [filters]);
 
-  const handlePlatformChange = (platformId) => {
-    setFilters({ platformId });
+  useEffect(() => {
+    document.title =
+      filters.platformName === 'All Platforms'
+        ? 'All Games'
+        : `Games - ${filters.platformName}`;
+  }, [filters.platformName]);
+
+  const handlePlatformChange = (platformId, platformName = 'All Platforms') => {
+    setFilters({ platformId, platformName });
   };
 
-  // 🔄 Загрузка следующей страницы (для текущей платформы)
   const loadMoreGames = useCallback(async () => {
     if (!nextPage || loading) return;
 
     try {
       setLoading(true);
-
       const relativeUrl = nextPage.startsWith('http')
         ? nextPage.replace('https://api.rawg.io/api/games?', '')
         : nextPage;
@@ -98,7 +101,6 @@ export const AllGamePage = () => {
     }
   }, [nextPage, loading]);
 
-  // 🔍 Следим за последним элементом
   const lastElementRef = useCallback(
     (node) => {
       if (loading) return;
@@ -118,35 +120,26 @@ export const AllGamePage = () => {
   return (
     <>
       <div style={styles.container}>
-        <h3>All games</h3>
+        <h3>
+          {filters.platformName === 'All platforms'
+            ? 'All Games'
+            : `Games for ${filters.platformName}`}
+        </h3>
       </div>
+
       <PlatformFilter
         selected={filters.platformId}
         onChange={handlePlatformChange}
         platforms={platforms}
       />
 
-      {/* <div>
-        <select name="" id="">
-          <option value="relevance">Relevance</option>
-          <option value="date_added">Date added</option>
-          <option value="name">Name</option>
-          <option value="release_date">Release date</option>
-          <option value="popularity">Popularity</option>
-          <option value="average_rating">Average rating</option>
-        </select>
-      </div> */}
-
       <div>
         <GameList items={gameItems} lastElementRef={lastElementRef} />
-
-        {loading && (
-          <div>
-            <PacmanLoader color={'gray'} />
-          </div>
-        )}
+        {loading && <PacmanLoader color={'gray'} />}
         {error && !loading && <div>OOPS! THERE WAS AN ERROR!</div>}
       </div>
     </>
   );
 };
+
+export default AllGamePage;

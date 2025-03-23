@@ -2,10 +2,11 @@ import React from 'react';
 
 export const PlatformFilter = ({ selected, onChange, platforms }) => {
   const handleChange = (e) => {
-    const value = e.target.value;
-    onChange(value); // передаём выбранный ID или '' (All)
+    const selectedOption = e.target.selectedOptions[0];
+    const value = selectedOption.value;
+    const name = selectedOption.textContent;
+    onChange(value, name);
   };
-
   return (
     <div style={{ marginBottom: '20px' }}>
       <select value={selected} onChange={handleChange}>
