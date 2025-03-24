@@ -43,10 +43,7 @@ export const fetchPlatforms = async () => {
   }
 };
 
-// export const fetchGamesFromUrl = async (url) => {
-//   const response = await axios.get(url);
-//   return {
-//     results: response.data.results || [],
-//     next: response.data.next
-//   };
-// };
+export const fetchGameBySlug = async (slug) => {
+  const response = await axios.get(`/games/${slug}`);
+  return response.data;
+};

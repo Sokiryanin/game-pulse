@@ -1,6 +1,7 @@
 import React from 'react';
 import { CardWrapper, GameTitle, ImgWrap } from './GameCard.styled';
 import { PlatformIcons } from '../PlatformIcons/PlatformIcons';
+import { Link } from 'react-router-dom';
 
 export const GameCard = ({
   game: { name, slug, background_image, platforms }
@@ -11,7 +12,9 @@ export const GameCard = ({
         <img src={background_image} alt={slug} />
       </ImgWrap>
       <PlatformIcons platforms={platforms} />
-      <GameTitle>{name}</GameTitle>
+      <Link to={`/games/${slug}`}>
+        <GameTitle>{name}</GameTitle>
+      </Link>
     </CardWrapper>
   );
 };
