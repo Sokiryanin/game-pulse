@@ -76,4 +76,3 @@ const Layout = () => {
 };
 
 export default Layout;
-// Compare this snippet from src/components/Layout/Layout.styled.jsx:

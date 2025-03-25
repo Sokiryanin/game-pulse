@@ -1,15 +1,21 @@
 import React from 'react';
+import { useFilters } from '../../hooks/useFilters';
 
-export const PlatformFilter = ({ selected, onChange, platforms }) => {
+export const PlatformFilter = () => {
+  const { filters, updateFilter, platforms } = useFilters();
+
   const handleChange = (e) => {
-    const selectedOption = e.target.selectedOptions[0];
-    const value = selectedOption.value;
-    const name = selectedOption.textContent;
-    onChange(value, name);
+    const selelectedOption = e.target.selectedOptions[0];
+    const value = selelectedOption.value;
+    const name = selelectedOption.textContent;
+
+    updateFilter('platformId', value);
+    updateFilter('platformName', name);
   };
+
   return (
     <div style={{ marginBottom: '20px' }}>
-      <select value={selected} onChange={handleChange}>
+      <select value={filters.platformId} onChange={handleChange}>
         <option value="">All platforms</option>
         {platforms.map((group) => (
           <optgroup key={group.id} label={group.name}>
