@@ -1,23 +1,26 @@
-import { PacmanLoader } from 'react-spinners';
-import { GameList } from '../../components/GameList/GameList';
-// import { PlatformFilter } from '../../components/PlatformFilter/PlatformFilter';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { fetchGames } from '../../api';
+import { GameList } from '../../components/GameList/GameList';
+import { PacmanLoader } from 'react-spinners';
 
-const AllGamePage = () => {
+const SearchResultsPage = () => {
   const [games, setGames] = useState([]);
   const [nextPage, setNextPage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-
   const observer = useRef();
 
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') ?? '';
+
+  // 🔁 Первый fetch при монтировании или изменении search
   useEffect(() => {
     async function loadInitial() {
       try {
         setLoading(true);
         setError(false);
-        const { results, next } = await fetchGames();
+        const { results, next } = await fetchGames(`search=${searchQuery}`);
         setGames(results);
         setNextPage(next);
       } catch (err) {
@@ -27,10 +30,10 @@ const AllGamePage = () => {
         setLoading(false);
       }
     }
-    loadInitial();
-  }, []);
+    if (searchQuery) loadInitial();
+  }, [searchQuery]);
 
-  // Загружаем следующую страницу
+  // 🔄 Загрузка следующей страницы (в том числе по search)
   const loadMore = useCallback(async () => {
     if (!nextPage || loading) return;
 
@@ -44,11 +47,8 @@ const AllGamePage = () => {
 
       setGames((prev) => [
         ...prev,
-        ...results.filter(
-          (item) => !prev.some((existing) => existing.id === item.id)
-        )
+        ...results.filter((item) => !prev.some((g) => g.id === item.id)) // 💥 убираем дубликаты
       ]);
-
       setNextPage(next);
     } catch (err) {
       console.error(err);
@@ -58,7 +58,7 @@ const AllGamePage = () => {
     }
   }, [nextPage, loading]);
 
-  // Возвращаем реф для последнего элемента
+  // 👀 Следим за последним элементом
   const lastElementRef = useCallback(
     (node) => {
       if (loading) return;
@@ -77,9 +77,7 @@ const AllGamePage = () => {
 
   return (
     <>
-      <h3>All games</h3>
-
-      {/* <PlatformFilter /> */}
+      <h3>Search Results for: "{searchQuery}"</h3>
 
       <GameList items={games} lastElementRef={lastElementRef} />
 
@@ -89,4 +87,4 @@ const AllGamePage = () => {
   );
 };
 
-export default AllGamePage;
+export default SearchResultsPage;

@@ -1,16 +1,15 @@
 import React from 'react';
-import { useFilters } from '../../hooks/useFilters';
+// import { useFilters } from '../../hooks/useFilters';
 
 export const PlatformFilter = () => {
-  const { filters, updateFilter, platforms } = useFilters();
+  // const { filters, updateFilter, platforms } = useFilters();
 
   const handleChange = (e) => {
-    const selelectedOption = e.target.selectedOptions[0];
-    const value = selelectedOption.value;
-    const name = selelectedOption.textContent;
-
-    updateFilter('platformId', value);
-    updateFilter('platformName', name);
+    // const selelectedOption = e.target.selectedOptions[0];
+    // const value = selelectedOption.value;
+    // const name = selelectedOption.textContent;
+    // updateFilter('platformId', value);
+    // updateFilter('platformName', name);
   };
 
   return (

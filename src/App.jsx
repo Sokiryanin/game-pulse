@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage/HomePage';
 import AllGamePage from './pages/AllGamePage/AllGamePage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import GamePage from './pages/GamePage/GamePage';
+import SearchResultsPage from './pages/SearchResultPage/SearchResultPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="games" element={<AllGamePage />} />
         <Route path="games/:slug" element={<GamePage />} />
+        <Route path="search" element={<SearchResultsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

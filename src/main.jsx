@@ -9,10 +9,8 @@ import { FilterProvider } from './context/FiltersContext.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <FilterProvider>
-        <GlobalStyle />
-        <App />
-      </FilterProvider>
+      <GlobalStyle />
+      <App />
     </BrowserRouter>
   </StrictMode>
 );

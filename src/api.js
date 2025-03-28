@@ -4,6 +4,7 @@ axios.defaults.baseURL = 'https://api.rawg.io/api';
 axios.defaults.params = { key: 'fe60b95489dc439ea2832b6695de7e88' };
 
 // Получение списка игр с фильтрацией по платформам
+
 export const fetchGames = async (query = '') => {
   const url = query.startsWith('http') ? query : `/games?${query}`;
   const response = await axios.get(url);
