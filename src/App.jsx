@@ -11,9 +11,20 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
+
+        {/* Страница всех игр */}
         <Route path="games" element={<AllGamePage />} />
+
+        {/* Страница фильтра по платформам */}
+        <Route path="games/platform/:platformSlug" element={<AllGamePage />} />
+
+        {/* Страница одной игры */}
         <Route path="games/:slug" element={<GamePage />} />
+
+        {/* Поиск */}
         <Route path="search" element={<SearchResultsPage />} />
+
+        {/* Фолбэк */}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
